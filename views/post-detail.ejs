@@ -24,12 +24,46 @@
       <section>
         <p id="body"><%= post.body %></p>
       </section>
+
       <section id="comments">
-        <% if (!comments) { %>
+        <!-- ============================================================================== -->
+        <!-- if (!comments) { 
+          <p>
+            This post might have comments. You can load them if you want to view
+            them.
+          </p>
+          <button
+          id="load-comments-btn"
+          class="btn btn-alt"
+          data-postid=" post._id "
+        >
+          Load Comments
+        </button>
+        } else if (comments.length === 0) {
+        <p>No comments found.</p>
+        } else {
+        <ol>
+          for (const comment of comments) {
+          <li>include('includes/comment-item', { comment: comment })</li>
+          } 
+        </ol>
+        }  -->
+        <!-- The above else ejs statements don't work now as we don't provide a comments
+        key from the server side blog.js file. Instead now we're fetching data from the
+        client side comments.js file. So the above EJS instructions doesn't do anything with
+        the dynamically fetched comments.js data. So we should manually replace the content
+        of that comment section with the data that we fetched from comments.js file. Which
+        means that we wanna replace the <p> and the <button> tag from the data that we
+        fetched from comments.js file when the load comments button is clicked. In order to
+        do that, we wanna manipulate the DOM from comments.js file once the load comments 
+        button is clicked. -->
+        <!-- ============================================================================== -->
+
         <p>
           This post might have comments. You can load them if you want to view
           them.
         </p>
+
         <!-- <form action="/posts/post._id/comments" method="GET">
           <button class="btn btn-alt">Load Comments</button>
         </form> -->
@@ -44,16 +78,8 @@
         event listener to the button and add some Ajax logic through the comments.js file. -->
         <!-- We need to add the posts id from a data- attribute to this button -->
         <!-- So then we can use that value inside the comments.js file. -->
-        <% } else if (comments.length === 0) { %>
-        <p>No comments found.</p>
-        <% } else { %>
-        <ol>
-          <% for (const comment of comments) { %>
-          <li><%- include('includes/comment-item', { comment: comment }) %></li>
-          <% } %>
-        </ol>
-        <% } %>
       </section>
+
       <section id="comments-form">
         <h2>Leave a comment</h2>
         <form action="/posts/<%= post._id %>/comments" method="POST">

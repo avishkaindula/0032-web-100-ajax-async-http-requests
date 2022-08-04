@@ -131,12 +131,10 @@ router.get("/posts/:id/comments", async function (req, res) {
     .toArray();
 
   // return res.render("post-detail", { post: post, comments: comments });
-  // const responseData on comments.js will give us the response data.
-  // That data is the data that we can use in our code to update parts of the loaded page.
-  // But this would fail because the /post/:id/comments get route on blog.js does not return any JSON
-  // Instead that get route returns a rendered html code. (post-detail.ejs)
-  // But now we're not interested in a full HTML ejs document, but instead we want the raw data.
-  // We can do that by using the following code.
+  // const responseData on comments.js is the data that we can use in our code to 
+  // update parts of the loaded page. But that would fail if the /post/:id/comments get route on blog.js 
+  // does not return any JSON.
+  // Therefor we need to provide that JSON data to comments.js by using the following code.
   res.json(comments);
   // .json() will encode data as JSON to send it as a response to comments.js file.
   // First of all we need to provide the value that should be encoded to JSON.
