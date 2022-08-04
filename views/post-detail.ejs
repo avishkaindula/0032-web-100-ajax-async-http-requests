@@ -82,7 +82,15 @@
 
       <section id="comments-form">
         <h2>Leave a comment</h2>
-        <form action="/posts/<%= post._id %>/comments" method="POST">
+        <!-- <form action="/posts/post._id/comments" method="POST"> -->
+        <!-- We need the action and the method only if we want the browser to handle our request. -->
+        <!-- It will cost an extra reload in our page -->
+        <!-- But we need to handle the form submission by our own using ajax -->
+        <!-- So we don't need action and method attributes. -->
+        <!-- We can handle this form by giving and id to it. We can also use the id of this section and 
+        then get access to this form through the querySelector. We'll use that method. -->
+        <!-- Then after we can handle this from through the ajax code we write in comments.js file. -->
+        <form>
           <div class="form-control">
             <label for="title">Comment title</label>
             <input type="text" id="title" name="title" required />

@@ -8,6 +8,13 @@ const commentsSectionElement = document.getElementById("comments");
 // In order to manipulate the DOM of post-detail.ejs file through the data fetched from comments.js,
 // we need to get access to the comments section of the post-detail.ejs like this.
 
+const commentsFormElement = document.querySelector("#comments-form form");
+// This will give access to the form that submits the comments.
+const commentTitleElement = document.getElementById("title");
+const commentTextElement = document.getElementById("text");
+// we need to get access to the title and the comment input elements like this in order
+// to extract data from it.
+
 function createCommentsList(comments) {
   const commentListElement = document.createElement("ol");
 
@@ -94,4 +101,25 @@ async function fetchCommentsForPost() {
 // In this function, we can now send a Ajax request to the server to fetch the comments data
 // We can use XMLHttpRequest Function or the Axios package instead of fetch()
 
+function saveComment(event) {
+  event.preventDefault();
+  // The default browser behavior would be to send the request on its own and reload the page.
+  // But we wanna prevent that browser default. So First of all we should do that like this.
+
+  const enteredTitle = commentTitleElement.value;
+  const enteredText = commentTextElement.value;
+  // These will extract the values that the user input through the form
+
+  console.log(enteredTitle, enteredText);
+  // output => 3rd Comment. This is the body of the 3rd comment.
+}
+// We write the ajax code to handle form submission inside this function.
+
 loadCommentsBtnElement.addEventListener("click", fetchCommentsForPost);
+
+commentsFormElement.addEventListener("submit", saveComment);
+// We add the event listener to the overall form of the comment submission section.
+// not to the button inside that comment submission form.
+// We add a "submit" listener here. (a submit event occurs when a form is submitted. it will
+// occur before the browser tries to handle the form submission. So we can use that event listener
+// for our job.)
