@@ -118,12 +118,12 @@ router.get("/posts/:id/comments", async function (req, res) {
   const postId = new ObjectId(req.params.id);
 
   // const post = await db.getDb().collection("posts").findOne({ _id: postId });
-  // Previously we needed to fetch posts in addition to the comments because 
+  // Previously we needed to fetch posts in addition to the comments because
   // We had to render the complete post-detail.ejs template.
   // Now since we don't load a new page, but only sends back specific data,
-  // We don't need to get the posts again in this route. 
+  // We don't need to get the posts again in this route.
   // We only need to send back the comments data as JSON to the comments.js file from this route.
-  
+
   const comments = await db
     .getDb()
     .collection("comments")
@@ -131,8 +131,8 @@ router.get("/posts/:id/comments", async function (req, res) {
     .toArray();
 
   // return res.render("post-detail", { post: post, comments: comments });
-  // const responseData on comments.js is the data that we can use in our code to 
-  // update parts of the loaded page. But that would fail if the /post/:id/comments get route on blog.js 
+  // const responseData on comments.js is the data that we can use in our code to
+  // update parts of the loaded page. But that would fail if the /post/:id/comments get route on blog.js
   // does not return any JSON.
   // Therefor we need to provide that JSON data to comments.js by using the following code.
   res.json(comments);
@@ -150,9 +150,23 @@ router.post("/posts/:id/comments", async function (req, res) {
     postId: postId,
     title: req.body.title,
     text: req.body.text,
+    // When we extract data from the request body, we currently only do that if the req body is URL encoded.
+    // In app.js we added URL encoded Middleware for parsing all incoming requests for
+    // data that might be attached to them.
+    // But that only look for data that is URL encoded, which is the format if a form is submitted.
+    // But we are instead sending JSON data from the comments.js file to this route.
+    // So we need to add a middleware that parse JSON data inside the app.js
+    // => app.use(express.json()); After that this code now should work.
+    // req.body.title will extract the title sent by the saveComment() function inside the comments.js file
+    // req.body.text will extract the text sent by the saveComment() function inside the comments.js file
   };
   await db.getDb().collection("comments").insertOne(newComment);
-  res.redirect("/posts/" + req.params.id);
+
+  // res.redirect("/posts/" + req.params.id);
+  // We no longer wanna redirect users and load the page.
+  // Instead now we wanna send back some JSON data.
+  res.json({ message: "Comment added!" });
+  // We can send back an {} object, which is converted to JSON by res.json() as the response.
 });
 
 module.exports = router;

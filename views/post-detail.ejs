@@ -90,7 +90,8 @@
         <!-- We can handle this form by giving and id to it. We can also use the id of this section and 
         then get access to this form through the querySelector. We'll use that method. -->
         <!-- Then after we can handle this from through the ajax code we write in comments.js file. -->
-        <form>
+        <form data-postid="<%= post._id %>">
+          <!-- this data-postid is used to access the id in comments.js -->
           <div class="form-control">
             <label for="title">Comment title</label>
             <input type="text" id="title" name="title" required />

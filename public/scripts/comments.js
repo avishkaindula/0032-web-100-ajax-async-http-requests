@@ -1,5 +1,8 @@
 // Ajax is all about sending http requests from the "browser side" JS code.
 // So we add this logic inside the public folder.
+// Then we need to connect this file to post-detail.ejs file.
+// We don't connect the JS script files inside the public folder to the blog.js route file.
+// Instead this file is automatically detected by the blog.js file.
 
 const loadCommentsBtnElement = document.getElementById("load-comments-btn");
 // This is how we gain access to the button on the post-detail.ejs file.
@@ -16,6 +19,24 @@ const commentTextElement = document.getElementById("text");
 // to extract data from it.
 
 function createCommentsList(comments) {
+  // I think this (comments) is the const comment that was created on the blog.js like this. =>
+  // res.json(comments);
+
+  // I think that because the data we use in this function are the data that is provided by the
+  // following code in the fetchCommentsForPost() function comments.js file
+  // => const commentsListElement = createCommentsList(responseData);
+
+  // Those response data is provided by the => const responseData = await response.json();
+  // code in the fetchCommentsForPost() function.
+  // and those data was sent by => res.json(comments); code on blog.js file.
+
+  // Also (comments) in res.json is the const comments created on the blog.js file like following.
+  // const comments = await db.getDb().collection("comments").find({ postId: postId }).toArray();
+  // And this is the code we use to extract comments data from the MongoDB database.
+
+  // So finally, assume that we are getting the comments data from the mongoDB database to
+  // function when we pass (comments) to => function createCommentsList(comments) {}
+
   const commentListElement = document.createElement("ol");
 
   for (const comment of comments) {
@@ -45,7 +66,9 @@ async function fetchCommentsForPost() {
 
   const response = await fetch(`/posts/${postId}/comments`);
   // The concrete value here should be the URL which you wanna send a GET request
-  // We can construct the url by sing backtick.
+  // This will send a get request to the /posts/:id/comments route on blog.js
+  // We can construct the url by sing backtick. ${postId} is the const postId
+  // we created in this function.
   // This will now send a http request to this url.
   // This is a HTTP request which is invoked by our own JS code
   // It's not sent by automatically by the browser like we did before.
@@ -66,7 +89,7 @@ async function fetchCommentsForPost() {
   // Instead that get route returns a rendered html code. (post-detail.ejs) But now we're not interested in a
   // full HTML ejs document, but instead we want the raw data.
   // So we need to update the route on blog.js to send comment data as JSON to this comments.js file.
-  // Once we send the comments data by using res.json(comments); code on blog.js file, this code should start working.
+  // Once we send the comments data by using => res.json(comments); code on blog.js file, this code should start working.
 
   console.log(responseData);
   // result==============================================================================================
@@ -106,12 +129,51 @@ function saveComment(event) {
   // The default browser behavior would be to send the request on its own and reload the page.
   // But we wanna prevent that browser default. So First of all we should do that like this.
 
+  const postId = loadCommentsBtnElement.dataset.postid;
+
   const enteredTitle = commentTitleElement.value;
   const enteredText = commentTextElement.value;
   // These will extract the values that the user input through the form
 
   console.log(enteredTitle, enteredText);
   // output => 3rd Comment. This is the body of the 3rd comment.
+
+  const comment = { title: enteredTitle, text: enteredText };
+  // We can create an Object that is sent to the body of the fetch function like this.
+
+  fetch(`/posts/${postId}/comments`, {
+    method: "POST",
+    // by default, the method is GET. But as we need to post a request, we need to use POST as the method.
+    body: JSON.stringify(comment),
+    // The post request also need the data that should be send with it.
+    // We can define that by using body: field.
+    // This should be some data in the JSON format, because JSON is the common data format
+    // for exchanging data when using AJAX.
+    // JSON.parse() will convert JSON to raw JavaScript Values
+    // JSON.stringify() will encode JavaScript values into JSON
+    // Now this JSON data is sent to the => router.post("/posts/:id/comments", async function (req, res) {}
+    // route on the blog.js file.
+
+    headers: {
+      "Content-Type": "application/json",
+      // This is a key value format
+      // Content-Type is the name of the header. And the application/json is the value of that header.
+      // application/json will tell the browser that we've attached some json data to this request.
+    },
+    // app.use(express.json()); middleware will only be able to catch a JSON request if that
+    // request has some meta-data which describes that the request is actually a JSON request.
+    // That meta-data is attached to the headers of the incoming request.
+    // But as we send this entire request manually by our selves, We also need to add those 
+    // meta-data manually like this.
+  });
+  // We need to construct the path to which we wanna send the request inside the fetch() function.
+  // The path is the => router.post("/posts/:id/comments", async function (req, res) {}) in blog.js
+  // Now we can send the http request through JavaScript by using the fetch() function.
+  // Fetch by default send a get request. But fetch can be used to send any kind of requests.
+  // In order to turn this into a post request, we need to add a second parameter to the fetch function.
+  // That second value is an object in which we can set different properties.
+  // we don't need to wait the fetch function because we're not doing anything with the response in blog.js
+  // => res.json({ message: "Comment added!" }); we just send a message instead.
 }
 // We write the ajax code to handle form submission inside this function.
 
