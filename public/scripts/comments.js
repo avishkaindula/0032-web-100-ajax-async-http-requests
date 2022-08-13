@@ -108,23 +108,30 @@ async function fetchCommentsForPost() {
   // length: 2
   //  [[Prototype]]: Array(0)
 
-  const commentsListElement = createCommentsList(responseData);
-  // createCommentsList(responseData) will provide the actual comment data to
-  // the (comments) parameter on => function createCommentsList(comments) {}
+  if (responseData && responseData.length > 0) {
+    const commentsListElement = createCommentsList(responseData);
+    // createCommentsList(responseData) will provide the actual comment data to
+    // the (comments) parameter on => function createCommentsList(comments) {}
 
-  commentsSectionElement.innerHTML = "";
-  // This will remove the innerHTML of the "comments" section of the post-detail.ejs file.
-  // Now we can replace that innerHTML with some other HTML code. We can do that by using
-  // the following code.
+    commentsSectionElement.innerHTML = "";
+    // This will remove the innerHTML of the "comments" section of the post-detail.ejs file.
+    // Now we can replace that innerHTML with some other HTML code. We can do that by using
+    // the following code.
 
-  commentsSectionElement.appendChild(commentsListElement);
-  // This will replace the innerHTML of comments section of post-detail.ejs with the data inside the
-  // createCommentsList() function.
+    commentsSectionElement.appendChild(commentsListElement);
+    // This will replace the innerHTML of comments section of post-detail.ejs with the data inside the
+    // createCommentsList() function.
+  } else {
+    commentsSectionElement.firstElementChild.textContent =
+      "We could not find any comments. Maybe add one?";
+  }
+  // This if statement will handle the case where there's no comments yet.
+
 }
 // In this function, we can now send a Ajax request to the server to fetch the comments data
 // We can use XMLHttpRequest Function or the Axios package instead of fetch()
 
-function saveComment(event) {
+async function saveComment(event) {
   event.preventDefault();
   // The default browser behavior would be to send the request on its own and reload the page.
   // But we wanna prevent that browser default. So First of all we should do that like this.
@@ -141,7 +148,7 @@ function saveComment(event) {
   const comment = { title: enteredTitle, text: enteredText };
   // We can create an Object that is sent to the body of the fetch function like this.
 
-  fetch(`/posts/${postId}/comments`, {
+  const response = await fetch(`/posts/${postId}/comments`, {
     method: "POST",
     // by default, the method is GET. But as we need to post a request, we need to use POST as the method.
     body: JSON.stringify(comment),
@@ -163,7 +170,7 @@ function saveComment(event) {
     // app.use(express.json()); middleware will only be able to catch a JSON request if that
     // request has some meta-data which describes that the request is actually a JSON request.
     // That meta-data is attached to the headers of the incoming request.
-    // But as we send this entire request manually by our selves, We also need to add those 
+    // But as we send this entire request manually by our selves, We also need to add those
     // meta-data manually like this.
   });
   // We need to construct the path to which we wanna send the request inside the fetch() function.
@@ -174,6 +181,13 @@ function saveComment(event) {
   // That second value is an object in which we can set different properties.
   // we don't need to wait the fetch function because we're not doing anything with the response in blog.js
   // => res.json({ message: "Comment added!" }); we just send a message instead.
+  // fetch yields a promise. So we can await this function and then write the code to enhance the user experience.
+
+  fetchCommentsForPost();
+  // We can call fetchCommentsForPost() inside the saveComment() function like this.
+  // This will fetch the comments immediately after we create and save a comment.
+  // Therefor, right after we create a new comment, the page will show us all the comments
+  // including the comment we created just now.
 }
 // We write the ajax code to handle form submission inside this function.
 
